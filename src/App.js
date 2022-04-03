@@ -8,6 +8,7 @@ import { graphqlOperation } from "aws-amplify";
 import { listMessages } from "./graphql/queries";
 import { createMessage } from "./graphql/mutations";
 import { onCreateMessage } from "./graphql/subscriptions";
+import moment from "moment";
 
 Amplify.configure(config);
 
@@ -53,24 +54,26 @@ function App({ signOut, user }) {
         messageEnd.current?.scrollIntoView({ behavior: "smooth" });
     }
     const handleSend = async (e) => {
-        const info = {
-            owner: user.username,
-            message: message,
-        };
         try {
-            await API.graphql({
-                authMode: "AMAZON_COGNITO_USER_POOLS",
-                query: createMessage,
-                variables: {
-                    input: info,
-                },
-            });
+            if (message.length >= 1 && e.key === "Enter") {
+                const info = {
+                    owner: user.username,
+                    message: message,
+                };
+                setMessage("");
+                await API.graphql({
+                    authMode: "AMAZON_COGNITO_USER_POOLS",
+                    query: createMessage,
+                    variables: {
+                        input: info,
+                    },
+                });
+                setMessages((messages) => [...messages, info]);
+                scrollToBottom();
+            }
         } catch (err) {
             console.error(err);
         }
-        setMessage("");
-        setMessages((messages) => [...messages, info]);
-        scrollToBottom();
     };
     return (
         <div>
@@ -82,7 +85,7 @@ function App({ signOut, user }) {
                             <div className="d-flex align-items-center">
                                 <h4 className="me-1">{user.username}</h4>
                                 <button
-                                    className="bnt btn-sm"
+                                    className="bnt btn-sm btn-warning"
                                     onClick={signOut}
                                 >
                                     Sign out
@@ -94,45 +97,53 @@ function App({ signOut, user }) {
             </div>
             <div className="chat-container container-fluid mb-5 mt-5">
                 <main className="msger-chat">
-                    {messages.map((msg, i) => {
-                        return (
-                            <div
-                                className={`msg ${
-                                    user.username !== msg.owner
-                                        ? "left-msg"
-                                        : "right-msg"
-                                }`}
-                                key={i}
-                                ref={
-                                    i === messages.length - 1
-                                        ? messageEnd
-                                        : null
-                                }
-                            >
-                                <div className="msg-img"></div>
+                    {messages
+                        .sort((a, b) => {
+                            return (
+                                new Date(a.createdAt) - new Date(b.createdAt)
+                            );
+                        })
+                        .map((msg, i) => {
+                            return (
+                                <div
+                                    className={`msg ${
+                                        user.username !== msg.owner
+                                            ? "left-msg"
+                                            : "right-msg"
+                                    }`}
+                                    key={i}
+                                    ref={
+                                        i === messages.length - 1
+                                            ? messageEnd
+                                            : null
+                                    }
+                                >
+                                    <div className="msg-img"></div>
 
-                                <div className="msg-bubble">
-                                    <div className="msg-info">
-                                        <div className="msg-info-name">
-                                            {msg.owner}
+                                    <div className="msg-bubble">
+                                        <div className="msg-info">
+                                            <div className="msg-info-name">
+                                                {msg.owner}
+                                            </div>
+                                            <div className="msg-info-time">
+                                                {moment(msg.createdAt).format(
+                                                    "LT"
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="msg-info-time">
-                                            12:45
-                                        </div>
-                                    </div>
 
-                                    <div className="msg-text">
-                                        {msg.message}
+                                        <div className="msg-text">
+                                            {msg.message}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
                 </main>
             </div>
             <div className="textfield-container fixed-bottom">
                 <div className="textfield d-flex mb-1">
-                    <textarea
+                    <input
                         type="text"
                         className="form-control ms-1 me-1"
                         placeholder="start typing..."
@@ -142,6 +153,7 @@ function App({ signOut, user }) {
                         onChange={(e) => {
                             setMessage(e.target.value);
                         }}
+                        onKeyDown={handleSend}
                     />
                     <button
                         className="btn btn-primary ms-1 me-1 ps-5 pe-5"
