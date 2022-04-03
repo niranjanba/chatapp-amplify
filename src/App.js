@@ -18,19 +18,25 @@ function App({ signOut, user }) {
     const messageEnd = useRef(null);
 
     useEffect(() => {
-        const subscription = API.graphql(
-            graphqlOperation(onCreateMessage)
-        ).subscribe({
-            next: ({ provider, value }) => {
-                setMessages((stateMessages) => [
-                    ...stateMessages,
-                    value.data.onCreateMessage,
-                ]);
-                console.log("message created");
-            },
-            error: (error) => console.warn(error),
-        });
-    }, []);
+        if (user) {
+            API.graphql(graphqlOperation(onCreateMessage)).subscribe({
+                next: ({ provider, value }) => console.log({ provider, value }),
+                error: (error) => console.warn(error),
+            });
+            // const subscription = API.graphql(
+            //     graphqlOperation(onCreateMessage)
+            // ).subscribe({
+            //     next: ({ provider, value }) => {
+            //         setMessages((stateMessages) => [
+            //             ...stateMessages,
+            //             value.data.onCreateMessage,
+            //         ]);
+            //         console.log("message created");
+            //     },
+            //     error: (error) => console.warn(error),
+            // });
+        }
+    }, [user]);
     useEffect(() => {
         async function getMessages() {
             try {
@@ -95,7 +101,10 @@ function App({ signOut, user }) {
                     </Authenticator>
                 </header>
             </div>
-            <div className="chat-container container-fluid mb-5 mt-5">
+            <div
+                className="chat-container container-fluid mb-5"
+                style={{ paddingTop: "50px" }}
+            >
                 <main className="msger-chat">
                     {messages
                         .sort((a, b) => {

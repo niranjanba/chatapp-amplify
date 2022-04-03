@@ -1,39 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateProjectPublic = /* GraphQL */ `
-  subscription OnCreateProjectPublic {
-    onCreateProjectPublic {
-      id
-      owner
-      message
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateProjectPublic = /* GraphQL */ `
-  subscription OnUpdateProjectPublic {
-    onUpdateProjectPublic {
-      id
-      owner
-      message
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteProjectPublic = /* GraphQL */ `
-  subscription OnDeleteProjectPublic {
-    onDeleteProjectPublic {
-      id
-      owner
-      message
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onCreateMessage = /* GraphQL */ `
   subscription OnCreateMessage {
     onCreateMessage {
