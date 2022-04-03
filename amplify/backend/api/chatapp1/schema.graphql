@@ -1,0 +1,15 @@
+type Message
+    @model
+    @auth(
+        rules: [
+            {
+                allow: private
+                provider: userPools
+                operations: [read, create, update, delete]
+            }
+        ]
+    ) {
+    id: ID!
+    owner: String!
+    message: String!
+}
