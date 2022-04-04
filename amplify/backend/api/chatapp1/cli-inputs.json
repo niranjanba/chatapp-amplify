@@ -5,17 +5,14 @@
     "serviceName": "AppSync",
     "gqlSchemaPath": "C:\\Users\\niran\\OneDrive\\Desktop\\Programming\\react and next js\\react-js\\amplify-demo\\chatapp1\\amplify\\backend\\api\\chatapp1\\schema.graphql",
     "defaultAuthType": {
-      "mode": "API_KEY",
-      "expirationTime": 7
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authchatapp10b62a7b3"
     },
     "additionalAuthTypes": [
       {
-        "mode": "AMAZON_COGNITO_USER_POOLS",
-        "cognitoUserPoolId": "authchatapp10b62a7b3"
-      },
-      {
         "mode": "AWS_IAM"
       }
-    ]
+    ],
+    "conflictResolution": {}
   }
 }

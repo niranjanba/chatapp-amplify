@@ -18,25 +18,18 @@ function App({ signOut, user }) {
     const messageEnd = useRef(null);
 
     useEffect(() => {
-        if (user) {
-            API.graphql(graphqlOperation(onCreateMessage)).subscribe({
-                next: ({ provider, value }) => console.log({ provider, value }),
-                error: (error) => console.warn(error),
-            });
-            // const subscription = API.graphql(
-            //     graphqlOperation(onCreateMessage)
-            // ).subscribe({
-            //     next: ({ provider, value }) => {
-            //         setMessages((stateMessages) => [
-            //             ...stateMessages,
-            //             value.data.onCreateMessage,
-            //         ]);
-            //         console.log("message created");
-            //     },
-            //     error: (error) => console.warn(error),
-            // });
-        }
-    }, [user]);
+        const subscription = API.graphql(
+            graphqlOperation(onCreateMessage)
+        ).subscribe({
+            next: ({ provider, value }) => {
+                setMessages((stateMessages) => [
+                    ...stateMessages,
+                    value.data.onCreateMessage,
+                ]);
+            },
+            error: (error) => console.warn(error),
+        });
+    }, []);
     useEffect(() => {
         async function getMessages() {
             try {
@@ -44,9 +37,7 @@ function App({ signOut, user }) {
                     query: listMessages,
                     authMode: "AMAZON_COGNITO_USER_POOLS",
                 });
-                console.log(messagesReq.data.listMessages.items);
                 setMessages([...messagesReq.data.listMessages.items]);
-                scrollToBottom();
             } catch (error) {
                 console.error(error);
             }
@@ -55,7 +46,7 @@ function App({ signOut, user }) {
     }, [user]);
     useEffect(() => {
         scrollToBottom();
-    }, [message]);
+    }, [message, messages]);
     function scrollToBottom() {
         messageEnd.current?.scrollIntoView({ behavior: "smooth" });
     }
