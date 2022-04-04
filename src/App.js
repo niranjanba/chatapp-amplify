@@ -29,7 +29,7 @@ function App({ signOut, user }) {
             },
             error: (error) => console.warn(error),
         });
-    }, []);
+    }, [user]);
     useEffect(() => {
         async function getMessages() {
             try {
@@ -65,7 +65,6 @@ function App({ signOut, user }) {
                         input: info,
                     },
                 });
-                setMessages((messages) => [...messages, info]);
                 scrollToBottom();
             }
         } catch (err) {
